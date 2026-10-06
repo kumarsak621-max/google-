@@ -21,7 +21,6 @@ type Cfg = {
   configured: boolean;
   provider: string;
   openrouter: boolean;
-  gemini: boolean;
   docs: Record<string, string>;
   seededPublicEvidence: number;
 };

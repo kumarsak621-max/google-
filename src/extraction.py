@@ -186,7 +186,7 @@ def _workaround(t: str) -> str:
 def llm_enrich(item: dict[str, Any]) -> dict[str, Any]:
     if not openrouter_key():
         raise LLMError(
-            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets."
+            "OpenRouter API key is not configured. Add OPENROUTER_API_KEY to Streamlit Secrets."
         )
     try:
         data = generate_json(

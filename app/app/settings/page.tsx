@@ -5,44 +5,33 @@ import { useStore } from "@/components/Providers";
 import { download, evidenceCsv, opportunityCsv, hypothesesCsv, researchReport } from "@/lib/exports";
 
 export default function SettingsPage() {
-  const { apiKey, provider, setApi, episodes, mode, research } = useStore();
+  const { apiKey, setApi, episodes, mode, research } = useStore();
   const [key, setKey] = useState(apiKey);
-  const [prov, setProv] = useState(provider);
 
   return (
     <div className="max-w-xl space-y-6">
       <h1 className="text-2xl font-medium">Settings & export</h1>
       <p className="text-sm text-muted">
         API keys are kept in sessionStorage and sent only to the server analysis
-        route. They are not embedded in frontend bundles. Prefer environment
-        variables on the host: OPENROUTER_API_KEY or GEMINI_API_KEY.
+        route. They are not embedded in frontend bundles. Prefer OPENROUTER_API_KEY
+        on the host. Model: google/gemini-2.5-flash via OpenRouter.
       </p>
       <form
         className="space-y-3 rounded-lg border border-line bg-white p-4"
         onSubmit={(e) => {
           e.preventDefault();
-          setApi(key, prov);
+          setApi(key, "openrouter");
         }}
       >
+        <p className="text-sm">Model: google/gemini-2.5-flash</p>
         <label className="block text-sm">
-          Provider
-          <select
-            className="mt-1 w-full rounded border border-line px-2 py-2"
-            value={prov}
-            onChange={(e) => setProv(e.target.value as "openrouter" | "gemini")}
-          >
-            <option value="openrouter">OpenRouter</option>
-            <option value="gemini">Gemini</option>
-          </select>
-        </label>
-        <label className="block text-sm">
-          API key (optional)
+          OpenRouter API key (optional)
           <input
             type="password"
             className="mt-1 w-full rounded border border-line px-3 py-2"
             value={key}
             onChange={(e) => setKey(e.target.value)}
-            placeholder="sk-… or AIza…"
+            placeholder="OpenRouter API key"
           />
         </label>
         <button className="rounded-full bg-blue px-4 py-2 text-sm text-white">Save in this browser session</button>

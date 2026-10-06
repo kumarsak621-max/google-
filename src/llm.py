@@ -7,30 +7,28 @@ from typing import Any
 
 import requests
 
-from src.config import openrouter_key, openrouter_model, secret
+from src.config import DEFAULT_MODEL, openrouter_key, openrouter_model, secret
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "openai/gpt-4o-mini"
 
 
 class LLMError(Exception):
     """User-facing OpenRouter error. Never includes the API key."""
 
 
-def generate_text(
+def call_openrouter(
     messages: list[dict[str, str]],
     *,
-    json_mode: bool = False,
     timeout: int = 40,
 ) -> str:
-    """Call OpenRouter chat completions. Never log or return the API key."""
+    """Call OpenRouter chat completions (Google Gemini 2.5 Flash). Never log the API key."""
     key = openrouter_key()
     if not key:
         raise LLMError(
-            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets."
+            "OpenRouter API key is not configured. Add OPENROUTER_API_KEY to Streamlit Secrets."
         )
 
-    model = openrouter_model()
+    model = openrouter_model() or DEFAULT_MODEL
     headers = {
         "Authorization": f"Bearer {key}",
         "Content-Type": "application/json",
@@ -44,8 +42,6 @@ def generate_text(
         "model": model,
         "messages": messages,
     }
-    if json_mode:
-        payload["response_format"] = {"type": "json_object"}
 
     try:
         res = requests.post(OPENROUTER_URL, headers=headers, json=payload, timeout=timeout)
@@ -55,7 +51,9 @@ def generate_text(
         raise LLMError("Could not reach OpenRouter. Check your network and try again.") from e
 
     if res.status_code in (401, 403):
-        raise LLMError("OpenRouter API key is invalid. Update OPENROUTER_API_KEY in Streamlit Secrets.")
+        raise LLMError(
+            "OpenRouter API key is invalid. Update OPENROUTER_API_KEY in Streamlit Secrets."
+        )
     if res.status_code == 429:
         raise LLMError("OpenRouter rate limit reached. Wait a moment and try again.")
     if res.status_code == 404:
@@ -73,6 +71,15 @@ def generate_text(
     if not isinstance(content, str):
         raise LLMError("OpenRouter returned an empty response.")
     return content
+
+
+def generate_text(
+    messages: list[dict[str, str]],
+    *,
+    json_mode: bool = False,
+    timeout: int = 40,
+) -> str:
+    return call_openrouter(messages, timeout=timeout)
 
 
 def parse_json_response(text: str) -> dict[str, Any]:
@@ -97,8 +104,10 @@ def parse_json_response(text: str) -> dict[str, Any]:
                     return obj
             except json.JSONDecodeError:
                 pass
-        raise LLMError("OpenRouter returned invalid JSON. Heuristic analysis will be used instead.")
+        raise LLMError(
+            "OpenRouter returned invalid JSON. Heuristic analysis will be used instead."
+        )
 
 
 def generate_json(messages: list[dict[str, str]], timeout: int = 40) -> dict[str, Any]:
-    return parse_json_response(generate_text(messages, json_mode=True, timeout=timeout))
+    return parse_json_response(call_openrouter(messages, timeout=timeout))

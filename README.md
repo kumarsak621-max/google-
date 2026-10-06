@@ -6,11 +6,11 @@ Streamlit research app for a Google Photos product-management case:
 
 This is **not** sentiment analysis. The unit of analysis is a **retrieval episode**.
 
-The app uses **OpenRouter** for LLM processing and **Tavily** for public web search:
+The app uses **OpenRouter** (`google/gemini-2.5-flash`) for LLM processing and **Tavily** for public web search:
 
 ```text
-Streamlit App → Research Pipeline → LLM abstraction → OpenRouter API → OPENROUTER_MODEL
-Research Pipeline → Tavily Search API → Public Web Evidence
+Streamlit → OpenRouter API → google/gemini-2.5-flash
+Tavily → Public web search → Evidence → OpenRouter → Gemini 2.5 Flash → AI analysis
 ```
 
 > Public online discussions are directional qualitative evidence and are not representative of all Google Photos users. Findings must be validated through primary user research.
@@ -45,7 +45,7 @@ Create `.streamlit/secrets.toml` (gitignored):
 ```toml
 OPENROUTER_API_KEY = "your-openrouter-api-key"
 TAVILY_API_KEY = "your-tavily-api-key"
-OPENROUTER_MODEL = "openai/gpt-4o-mini"
+OPENROUTER_MODEL = "google/gemini-2.5-flash"
 ```
 
 Never put real credentials in the repository or README. Copy from `.streamlit/secrets.toml.example`.
@@ -62,7 +62,7 @@ Never put real credentials in the repository or README. Copy from `.streamlit/se
 ```toml
 OPENROUTER_API_KEY = "your-openrouter-api-key"
 TAVILY_API_KEY = "your-tavily-api-key"
-OPENROUTER_MODEL = "openai/gpt-4o-mini"
+OPENROUTER_MODEL = "google/gemini-2.5-flash"
 ```
 
 7. Deploy.

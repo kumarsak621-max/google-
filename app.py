@@ -7,7 +7,7 @@ import plotly.express as px
 import streamlit as st
 
 from src.clustering import cluster_episodes
-from src.config import keys_status
+from src.config import keys_status, openrouter_key, openrouter_model, tavily_key
 from src.database import save_run, upsert_evidence, load_real
 from src.demo import demo_episodes, load_collected_public_json, write_demo_csv
 from src.pipeline import run_research
@@ -118,8 +118,13 @@ def sidebar():
     max_results = st.sidebar.number_input("Maximum results", 10, 300, 100, 10)
     quality = st.sidebar.slider("Evidence quality threshold", 1, 5, 4)
     keys = keys_status()
-    st.sidebar.write("Tavily:", "configured" if keys["tavily"] else "missing")
-    st.sidebar.write("OpenRouter:", "configured" if keys["openrouter"] else "optional / heuristic")
+    if not isinstance(keys, dict):
+        keys = {}
+    keys["openrouter"] = bool(openrouter_key())
+    keys["tavily"] = bool(tavily_key())
+    st.sidebar.write("Tavily:", "configured" if keys["tavily"] else "not configured")
+    st.sidebar.write("OpenRouter:", "configured" if keys["openrouter"] else "not configured")
+    st.sidebar.caption(f"Model: {openrouter_model()}")
     return depth, sources, max_results, quality, keys
 
 
@@ -440,12 +445,12 @@ def page_research(depth, sources, max_results, quality, keys):
             "On Streamlit Community Cloud: App settings → Secrets:\n\n"
             "```toml\nOPENROUTER_API_KEY = \"your-openrouter-api-key\"\n"
             "TAVILY_API_KEY = \"your-tavily-api-key\"\n"
-            "OPENROUTER_MODEL = \"openai/gpt-4o-mini\"\n```\n\n"
+            "OPENROUTER_MODEL = \"google/gemini-2.5-flash\"\n```\n\n"
             "Locally, set environment variables or `.streamlit/secrets.toml` (never commit secrets)."
         )
     if not keys["openrouter"]:
         st.info(
-            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets. "
+            "OpenRouter API key is not configured. Add OPENROUTER_API_KEY to Streamlit Secrets. "
             "Heuristic extraction still runs without it."
         )
     col1, col2 = st.columns(2)

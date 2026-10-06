@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Body = {
   texts: { id?: string; source?: string; url?: string; date?: string; title?: string; author?: string; text: string }[];
-  provider?: "openrouter" | "gemini";
   apiKey?: string;
 };
 
@@ -60,15 +59,12 @@ function parseJsonPayload(text: string): unknown {
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Body;
-    const provider = body.provider === "gemini" ? "gemini" : "openrouter";
-    const envKey =
-      provider === "gemini" ? process.env.GEMINI_API_KEY : process.env.OPENROUTER_API_KEY;
-    const apiKey = body.apiKey || envKey;
+    const apiKey = body.apiKey || process.env.OPENROUTER_API_KEY;
     if (!apiKey) {
       return NextResponse.json(
         {
           error:
-            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets (or the server environment).",
+            "OpenRouter API key is not configured. Add OPENROUTER_API_KEY to Streamlit Secrets (or the server environment).",
         },
         { status: 400 },
       );
@@ -86,26 +82,6 @@ export async function POST(req: NextRequest) {
       })),
     );
 
-    if (provider === "gemini") {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            contents: [{ role: "user", parts: [{ text: `${SYSTEM}\n\nDATA:\n${payload}` }] }],
-            generationConfig: { responseMimeType: "application/json" },
-          }),
-        },
-      );
-      if (!res.ok) {
-        return NextResponse.json({ error: "Gemini request failed." }, { status: 502 });
-      }
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-      return NextResponse.json(parseJsonPayload(text));
-    }
-
     const headers: Record<string, string> = {
       Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
@@ -118,8 +94,7 @@ export async function POST(req: NextRequest) {
       method: "POST",
       headers,
       body: JSON.stringify({
-        model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
-        response_format: { type: "json_object" },
+        model: process.env.OPENROUTER_MODEL || "google/gemini-2.5-flash",
         messages: [
           { role: "system", content: SYSTEM },
           { role: "user", content: payload },
