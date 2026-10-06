@@ -12,6 +12,7 @@ ENV/
 
 # Python
 __pycache__/
+*.pyc
 *.py[cod]
 *.pyo
 .pytest_cache/
