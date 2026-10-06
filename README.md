@@ -65,7 +65,7 @@ TAVILY_API_KEY = "your-tavily-api-key"
 OPENROUTER_MODEL = "google/gemini-2.5-flash"
 ```
 
-7. Deploy.
+7. Deploy, then **Reboot** the app so it loads the latest commit.
 
 Demo Mode works even if secrets are empty.
 

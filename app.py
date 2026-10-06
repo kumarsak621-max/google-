@@ -42,12 +42,35 @@ NOTICE = (
 )
 AI_NOTICE = "AI interpretations are hypotheses derived from evidence and are not direct user statements."
 
+PAGES = [
+    "Landing",
+    "Overview",
+    "Evidence Explorer",
+    "Retrieval Archetypes",
+    "Memory Map",
+    "Retrieval Funnel",
+    "Opportunity Matrix",
+    "Research Hypotheses",
+    "Research Report",
+    "Run Real Research",
+]
+NAV_STATE_KEY = "_current_page"
+NAV_WIDGET_KEY = "_page_selector"
+MODE_STATE_KEY = "_data_mode"
+MODE_WIDGET_KEY = "_dataset_selector"
+
 
 def init_state():
-    if "page" not in st.session_state:
-        st.session_state.page = "Landing"
-    if "mode" not in st.session_state:
-        st.session_state.mode = "demo"
+    if NAV_STATE_KEY not in st.session_state:
+        st.session_state[NAV_STATE_KEY] = "Landing"
+    if NAV_WIDGET_KEY not in st.session_state:
+        st.session_state[NAV_WIDGET_KEY] = st.session_state[NAV_STATE_KEY]
+    if MODE_STATE_KEY not in st.session_state:
+        st.session_state[MODE_STATE_KEY] = "demo"
+    if MODE_WIDGET_KEY not in st.session_state:
+        st.session_state[MODE_WIDGET_KEY] = (
+            "Demo" if st.session_state[MODE_STATE_KEY] == "demo" else "Real research"
+        )
     if "real" not in st.session_state:
         st.session_state.real = load_real() or []
     if "run" not in st.session_state:
@@ -56,22 +79,52 @@ def init_state():
         st.session_state.logs = []
 
 
+def apply_pending_nav():
+    """Apply navigation queued from buttons. Must run before any widgets."""
+    if "_pending_page" in st.session_state:
+        page = st.session_state.pop("_pending_page")
+        st.session_state[NAV_STATE_KEY] = page
+        st.session_state[NAV_WIDGET_KEY] = page
+    if "_pending_mode" in st.session_state:
+        mode = st.session_state.pop("_pending_mode")
+        st.session_state[MODE_STATE_KEY] = mode
+        st.session_state[MODE_WIDGET_KEY] = "Demo" if mode == "demo" else "Real research"
+
+
+def current_page() -> str:
+    return st.session_state.get(NAV_STATE_KEY, "Landing")
+
+
+def current_mode() -> str:
+    return st.session_state.get(MODE_STATE_KEY, "demo")
+
+
 def episodes_for_mode() -> list[dict]:
-    if st.session_state.mode == "demo":
+    if current_mode() == "demo":
         return demo_episodes()
     return st.session_state.real
 
 
 def go(page: str, mode: str | None = None):
-    if mode:
-        st.session_state.mode = mode
-    st.session_state.page = page
+    """Queue navigation for the next run. Never mutates widget keys after widgets exist."""
+    st.session_state["_pending_page"] = page
+    if mode is not None:
+        st.session_state["_pending_mode"] = mode
+
+
+def set_nav(page: str, mode: str | None = None):
+    """Button callback: runs before widgets on the following rerun."""
+    st.session_state[NAV_STATE_KEY] = page
+    st.session_state[NAV_WIDGET_KEY] = page
+    if mode is not None:
+        st.session_state[MODE_STATE_KEY] = mode
+        st.session_state[MODE_WIDGET_KEY] = "Demo" if mode == "demo" else "Real research"
 
 
 def banner():
     st.caption(NOTICE)
     st.caption(AI_NOTICE)
-    if st.session_state.mode == "demo":
+    if current_mode() == "demo":
         st.markdown(
             '<div class="warn">⚠️ DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE</div>',
             unsafe_allow_html=True,
@@ -87,40 +140,32 @@ def sidebar():
     st.sidebar.title("Photo Retrieval Discovery Engine")
     st.sidebar.caption("Understanding how people retrieve visual memories when exact metadata is missing")
 
-    mode_label = st.sidebar.radio(
-        "Dataset",
-        ["Demo", "Real research"],
-        index=0 if st.session_state.mode == "demo" else 1,
+    st.sidebar.radio("Dataset", ["Demo", "Real research"], key=MODE_WIDGET_KEY)
+    st.session_state[MODE_STATE_KEY] = (
+        "demo" if st.session_state[MODE_WIDGET_KEY] == "Demo" else "research"
     )
-    st.session_state.mode = "demo" if mode_label == "Demo" else "research"
 
-    pages = [
-        "Landing",
-        "Overview",
-        "Evidence Explorer",
-        "Retrieval Archetypes",
-        "Memory Map",
-        "Retrieval Funnel",
-        "Opportunity Matrix",
-        "Research Hypotheses",
-        "Research Report",
-        "Run Real Research",
-    ]
-    st.sidebar.radio("Pages", pages, key="page")
+    st.sidebar.radio("Pages", PAGES, key=NAV_WIDGET_KEY)
+    st.session_state[NAV_STATE_KEY] = st.session_state[NAV_WIDGET_KEY]
 
     st.sidebar.markdown("## Research Configuration")
-    depth = st.sidebar.selectbox("Search depth", ["Quick", "Standard", "Deep"])
+    depth = st.sidebar.selectbox("Search depth", ["Quick", "Standard", "Deep"], key="sidebar_depth")
     sources = st.sidebar.multiselect(
         "Sources",
         ["Reddit", "Google Photos Community", "App reviews", "Forums", "YouTube", "Other public web"],
         default=["Reddit", "Google Photos Community", "App reviews"],
+        key="sidebar_sources",
     )
-    max_results = st.sidebar.number_input("Maximum results", 10, 300, 100, 10)
-    quality = st.sidebar.slider("Evidence quality threshold", 1, 5, 4)
+    max_results = st.sidebar.number_input("Maximum results", 10, 300, 100, 10, key="sidebar_max")
+    quality = st.sidebar.slider("Evidence quality threshold", 1, 5, 4, key="sidebar_quality")
     try:
         keys = keys_status()
     except Exception:
         keys = {"openrouter": False, "tavily": False}
+    if not isinstance(keys, dict):
+        keys = {"openrouter": False, "tavily": False}
+    keys["openrouter"] = bool(keys.get("openrouter", False))
+    keys["tavily"] = bool(keys.get("tavily", False))
     st.sidebar.write("Tavily:", "configured" if keys["tavily"] else "not configured")
     st.sidebar.write("OpenRouter:", "configured" if keys["openrouter"] else "not configured")
     st.sidebar.caption(f"Model: {openrouter_model()}")
@@ -136,15 +181,25 @@ def page_landing():
     )
     st.info(NOTICE)
     c1, c2, c3 = st.columns(3)
-    if c1.button("Explore Demo", type="primary"):
-        go("Overview", "demo")
-        st.rerun()
-    if c2.button("Run Real Research"):
-        go("Run Real Research", "research")
-        st.rerun()
-    if c3.button("View Evidence"):
-        go("Evidence Explorer")
-        st.rerun()
+    c1.button(
+        "Explore Demo",
+        type="primary",
+        key="btn_explore_demo",
+        on_click=set_nav,
+        args=("Overview", "demo"),
+    )
+    c2.button(
+        "Run Real Research",
+        key="btn_landing_research",
+        on_click=set_nav,
+        args=("Run Real Research", "research"),
+    )
+    c3.button(
+        "View Evidence",
+        key="btn_view_evidence",
+        on_click=set_nav,
+        args=("Evidence Explorer",),
+    )
     st.markdown(
         "**Analyzes:** Memory → search expression → search behavior → retrieval failure → workaround → opportunity. "
         "This is not sentiment analysis."
@@ -225,18 +280,18 @@ def Counter_safe(eps, field):
 def page_evidence(eps: list[dict]):
     banner()
     st.header("Evidence Explorer")
-    q = st.text_input("Search quotes, IDs, queries")
+    q = st.text_input("Search quotes, IDs, queries", key="ev_search")
     c1, c2, c3, c4 = st.columns(4)
     sources = ["all"] + sorted({e.get("source") or "" for e in eps})
     fails = ["all"] + sorted({e.get("failure_category") or "" for e in eps})
     outcomes = ["all", "succeeded", "failed", "partial", "unknown"]
     strengths = ["all", "5", "4", "3", "2", "1"]
-    src = c1.selectbox("Source", sources)
-    fail = c2.selectbox("Failure", fails)
-    outc = c3.selectbox("Outcome", outcomes)
-    strn = c4.selectbox("Strength", strengths)
+    src = c1.selectbox("Source", sources, key="ev_source")
+    fail = c2.selectbox("Failure", fails, key="ev_fail")
+    outc = c3.selectbox("Outcome", outcomes, key="ev_outcome")
+    strn = c4.selectbox("Strength", strengths, key="ev_strength")
     arches = ["all"] + sorted({e.get("archetype_id") or "" for e in eps})
-    arch = st.selectbox("Archetype", arches)
+    arch = st.selectbox("Archetype", arches, key="ev_arch")
 
     view = []
     for e in eps:
@@ -273,7 +328,7 @@ def page_evidence(eps: list[dict]):
     st.dataframe(table, use_container_width=True, hide_index=True)
     ids = [e.get("id") for e in view]
     if ids:
-        pick = st.selectbox("Open evidence", ids)
+        pick = st.selectbox("Open evidence", ids, key="ev_open")
         e = next(x for x in view if x.get("id") == pick)
         show_item(e)
 
@@ -301,7 +356,7 @@ def page_archetypes(eps: list[dict]):
     if not arch:
         st.write("Not enough episodes to cluster.")
         return
-    pick = st.selectbox("Archetype", [a["name"] for a in arch])
+    pick = st.selectbox("Archetype", [a["name"] for a in arch], key="arch_pick")
     a = next(x for x in arch if x["name"] == pick)
     st.subheader(a["name"])
     st.write(a["description"])
@@ -368,7 +423,7 @@ def page_opportunity(eps: list[dict]):
     ]
     st.dataframe(pd.DataFrame(rows), use_container_width=True, hide_index=True)
     if arch:
-        pick = st.selectbox("Inspect", [a["name"] for a in arch])
+        pick = st.selectbox("Inspect", [a["name"] for a in arch], key="opp_inspect")
         a = next(x for x in arch if x["name"] == pick)
         st.write(a.get("score_rationale"))
         for eid in a.get("evidence_ids") or []:
@@ -395,7 +450,7 @@ def page_report(eps: list[dict]):
     banner()
     st.header("Research Report")
     arch, hyps = analytics(eps)
-    md = report_markdown(eps, arch, hyps, st.session_state.mode)
+    md = report_markdown(eps, arch, hyps, current_mode())
     st.markdown(md)
     exports(eps, arch, hyps, md)
 
@@ -404,12 +459,13 @@ def exports(eps, arch, hyps, md):
     st.subheader("Export")
     df = pd.DataFrame(eps)
     csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("Download Evidence CSV", csv, "evidence.csv", "text/csv")
+    st.download_button("Download Evidence CSV", csv, "evidence.csv", "text/csv", key="dl_csv")
     st.download_button(
         "Download JSON",
-        json.dumps({"mode": st.session_state.mode, "episodes": eps, "archetypes": arch}, indent=2, ensure_ascii=False),
+        json.dumps({"mode": current_mode(), "episodes": eps, "archetypes": arch}, indent=2, ensure_ascii=False),
         "dataset.json",
         "application/json",
+        key="dl_json",
     )
     op = pd.DataFrame(
         [
@@ -427,8 +483,8 @@ def exports(eps, arch, hyps, md):
             for a in arch
         ]
     )
-    st.download_button("Download Opportunity Matrix", op.to_csv(index=False).encode("utf-8"), "opportunity.csv", "text/csv")
-    st.download_button("Download Research Report", md.encode("utf-8"), "research-report.md", "text/markdown")
+    st.download_button("Download Opportunity Matrix", op.to_csv(index=False).encode("utf-8"), "opportunity.csv", "text/csv", key="dl_opp")
+    st.download_button("Download Research Report", md.encode("utf-8"), "research-report.md", "text/markdown", key="dl_report")
 
 
 def page_research(depth, sources, max_results, quality, keys):
@@ -456,19 +512,23 @@ def page_research(depth, sources, max_results, quality, keys):
             "OpenRouter API key is not configured. Add OPENROUTER_API_KEY to Streamlit Secrets. "
             "Heuristic extraction still runs without it."
         )
+    if "_flash" in st.session_state:
+        st.success(st.session_state.pop("_flash"))
     col1, col2 = st.columns(2)
-    if col1.button("Load collected public corpus"):
+    if col1.button("Load collected public corpus", key="btn_load_corpus"):
         rows = load_collected_public_json()
         if not rows:
             st.error("No file at evidence/retrieval-episodes.json")
         else:
             upsert_evidence(rows)
             st.session_state.real = load_real()
-            st.session_state.mode = "research"
-            st.success(f"Loaded {len(rows)} previously collected public episodes with original quotes and URLs.")
+            st.session_state["_flash"] = (
+                f"Loaded {len(rows)} previously collected public episodes with original quotes and URLs."
+            )
+            go(current_page(), "research")
             st.rerun()
     run_disabled = not keys["tavily"]
-    if col2.button("Run Real Research", type="primary", disabled=run_disabled):
+    if col2.button("Run Real Research", type="primary", disabled=run_disabled, key="btn_run_live"):
         box = st.empty()
         logs: list[str] = []
 
@@ -484,8 +544,9 @@ def page_research(depth, sources, max_results, quality, keys):
             save_run(result)
             st.session_state.real = load_real()
             st.session_state.run = result
-            st.session_state.mode = "research"
-            st.success("Research run complete. Switch Dataset to Real research to explore.")
+            st.session_state["_flash"] = "Research run complete. Dataset is Real research."
+            go("Run Real Research", "research")
+            st.rerun()
         except Exception as ex:
             st.error(str(ex))
             st.info("Demo Mode remains available.")
@@ -505,9 +566,10 @@ def page_research(depth, sources, max_results, quality, keys):
 
 def main():
     init_state()
+    apply_pending_nav()
     write_demo_csv()
     depth, sources, max_results, quality, keys = sidebar()
-    page = st.session_state.page
+    page = current_page()
     eps = episodes_for_mode()
     if page == "Landing":
         page_landing()
