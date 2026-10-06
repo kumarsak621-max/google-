@@ -31,8 +31,8 @@ type Ctx = {
   addManual: (row: IngestRow, useLlm: boolean) => Promise<string | null>;
   clearResearch: () => void;
   apiKey: string;
-  provider: "openai" | "gemini";
-  setApi: (key: string, provider: "openai" | "gemini") => void;
+  provider: "openrouter" | "gemini";
+  setApi: (key: string, provider: "openrouter" | "gemini") => void;
   analyzing: boolean;
   refreshResearch: () => Promise<void>;
 };
@@ -44,7 +44,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   const [mode, setModeState] = useState<DataMode>("demo");
   const [research, setResearch] = useState<Episode[]>([]);
   const [apiKey, setApiKey] = useState("");
-  const [provider, setProvider] = useState<"openai" | "gemini">("openai");
+  const [provider, setProvider] = useState<"openrouter" | "gemini">("openrouter");
   const [analyzing, setAnalyzing] = useState(false);
 
   useEffect(() => {
@@ -61,7 +61,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     saveMode(m);
   }, []);
 
-  const setApi = useCallback((key: string, p: "openai" | "gemini") => {
+  const setApi = useCallback((key: string, p: "openrouter" | "gemini") => {
     setApiKey(key);
     setProvider(p);
     saveApiSettings(key, p);

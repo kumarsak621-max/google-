@@ -30,14 +30,17 @@ export function saveMode(mode: DataMode) {
 }
 
 export function loadApiSettings() {
-  if (typeof window === "undefined") return { apiKey: "", provider: "openai" as const };
+  if (typeof window === "undefined") return { apiKey: "", provider: "openrouter" as const };
+  const stored = sessionStorage.getItem(KEY_PROVIDER);
+  const provider =
+    stored === "gemini" ? ("gemini" as const) : ("openrouter" as const);
   return {
     apiKey: sessionStorage.getItem(KEY_API) || "",
-    provider: (sessionStorage.getItem(KEY_PROVIDER) as "openai" | "gemini") || "openai",
+    provider,
   };
 }
 
-export function saveApiSettings(apiKey: string, provider: "openai" | "gemini") {
+export function saveApiSettings(apiKey: string, provider: "openrouter" | "gemini") {
   sessionStorage.setItem(KEY_API, apiKey);
   sessionStorage.setItem(KEY_PROVIDER, provider);
 }

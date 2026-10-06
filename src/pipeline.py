@@ -50,6 +50,7 @@ def run_research(
 
     queries = generate_queries(sources, depth)
     log(f"✓ {len(queries)} research queries generated")
+    log("→ LLM: OpenRouter" if use_llm else "→ LLM: heuristic only (OpenRouter not configured)")
 
     hits: list[dict] = []
     snippets: list[str] = []

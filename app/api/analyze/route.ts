@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 type Body = {
   texts: { id?: string; source?: string; url?: string; date?: string; title?: string; author?: string; text: string }[];
-  provider?: "openai" | "gemini";
+  provider?: "openrouter" | "gemini";
   apiKey?: string;
 };
 
@@ -41,19 +41,34 @@ Each item:
   }
 }`;
 
+function parseJsonPayload(text: string): unknown {
+  const trimmed = (text || "").trim();
+  const fenced = trimmed.match(/```(?:json)?\s*([\s\S]*?)```/i);
+  const raw = fenced ? fenced[1].trim() : trimmed;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    const start = raw.indexOf("{");
+    const end = raw.lastIndexOf("}");
+    if (start >= 0 && end > start) {
+      return JSON.parse(raw.slice(start, end + 1));
+    }
+    throw new Error("OpenRouter returned invalid JSON.");
+  }
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = (await req.json()) as Body;
+    const provider = body.provider === "gemini" ? "gemini" : "openrouter";
     const envKey =
-      body.provider === "gemini"
-        ? process.env.GEMINI_API_KEY
-        : process.env.OPENAI_API_KEY;
+      provider === "gemini" ? process.env.GEMINI_API_KEY : process.env.OPENROUTER_API_KEY;
     const apiKey = body.apiKey || envKey;
     if (!apiKey) {
       return NextResponse.json(
         {
           error:
-            "No LLM API key configured. Use heuristic analysis (works without a key) or add OPENAI_API_KEY / GEMINI_API_KEY on the server, or paste a key in Settings (sent only to this API route, never stored in the repo).",
+            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets (or the server environment).",
         },
         { status: 400 },
       );
@@ -71,7 +86,7 @@ export async function POST(req: NextRequest) {
       })),
     );
 
-    if (body.provider === "gemini") {
+    if (provider === "gemini") {
       const res = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
         {
@@ -84,22 +99,26 @@ export async function POST(req: NextRequest) {
         },
       );
       if (!res.ok) {
-        const err = await res.text();
-        return NextResponse.json({ error: err.slice(0, 800) }, { status: 502 });
+        return NextResponse.json({ error: "Gemini request failed." }, { status: 502 });
       }
       const data = await res.json();
       const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "{}";
-      return NextResponse.json(JSON.parse(text));
+      return NextResponse.json(parseJsonPayload(text));
     }
 
-    const res = await fetch("https://api.openai.com/v1/chat/completions", {
+    const headers: Record<string, string> = {
+      Authorization: `Bearer ${apiKey}`,
+      "Content-Type": "application/json",
+      "X-Title": "Photo Retrieval Discovery Engine",
+    };
+    const referer = process.env.APP_URL;
+    if (referer) headers["HTTP-Referer"] = referer;
+
+    const res = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
+      headers,
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || "gpt-4o-mini",
+        model: process.env.OPENROUTER_MODEL || "openai/gpt-4o-mini",
         response_format: { type: "json_object" },
         messages: [
           { role: "system", content: SYSTEM },
@@ -107,13 +126,18 @@ export async function POST(req: NextRequest) {
         ],
       }),
     });
+    if (res.status === 401 || res.status === 403) {
+      return NextResponse.json({ error: "OpenRouter API key is invalid." }, { status: 401 });
+    }
+    if (res.status === 429) {
+      return NextResponse.json({ error: "OpenRouter rate limit reached. Try again later." }, { status: 429 });
+    }
     if (!res.ok) {
-      const err = await res.text();
-      return NextResponse.json({ error: err.slice(0, 800) }, { status: 502 });
+      return NextResponse.json({ error: `OpenRouter request failed (HTTP ${res.status}).` }, { status: 502 });
     }
     const data = await res.json();
     const text = data.choices?.[0]?.message?.content || "{}";
-    return NextResponse.json(JSON.parse(text));
+    return NextResponse.json(parseJsonPayload(text));
   } catch (e) {
     return NextResponse.json(
       { error: e instanceof Error ? e.message : "Analysis failed" },

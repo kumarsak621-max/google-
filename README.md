@@ -6,6 +6,13 @@ Streamlit research app for a Google Photos product-management case:
 
 This is **not** sentiment analysis. The unit of analysis is a **retrieval episode**.
 
+The app uses **OpenRouter** for LLM processing and **Tavily** for public web search:
+
+```text
+Streamlit App → Research Pipeline → LLM abstraction → OpenRouter API → OPENROUTER_MODEL
+Research Pipeline → Tavily Search API → Public Web Evidence
+```
+
 > Public online discussions are directional qualitative evidence and are not representative of all Google Photos users. Findings must be validated through primary user research.
 
 > AI interpretations are hypotheses derived from evidence and are not direct user statements.
@@ -29,18 +36,19 @@ Open the URL Streamlit prints (usually http://localhost:8501).
 
 **Load collected public corpus** (no Tavily key): uses `evidence/retrieval-episodes.json` (public quotes + URLs collected earlier).
 
-**Run Real Research** needs Tavily:
+**Run Real Research** needs Tavily for public web search. LLM processing uses OpenRouter (optional; heuristic extraction still runs without it).
 
 #### Local secrets
 
 Create `.streamlit/secrets.toml` (gitignored):
 
 ```toml
-TAVILY_API_KEY = "tvly-..."
-OPENAI_API_KEY = "sk-..."
+OPENROUTER_API_KEY = "your-openrouter-api-key"
+TAVILY_API_KEY = "your-tavily-api-key"
+OPENROUTER_MODEL = "openai/gpt-4o-mini"
 ```
 
-OpenAI is optional. Without it, heuristic extraction still runs.
+Never put real credentials in the repository or README. Copy from `.streamlit/secrets.toml.example`.
 
 ## Deploy: GitHub → Streamlit Community Cloud
 
@@ -52,8 +60,9 @@ OpenAI is optional. Without it, heuristic extraction still runs.
 6. **Advanced settings → Secrets** paste:
 
 ```toml
-TAVILY_API_KEY = "tvly-..."
-OPENAI_API_KEY = "sk-..."
+OPENROUTER_API_KEY = "your-openrouter-api-key"
+TAVILY_API_KEY = "your-tavily-api-key"
+OPENROUTER_MODEL = "openai/gpt-4o-mini"
 ```
 
 7. Deploy.
@@ -65,7 +74,7 @@ Demo Mode works even if secrets are empty.
 ```text
 app.py
 requirements.txt
-src/           search, extraction, verification, clustering, scoring, pipeline
+src/           llm (OpenRouter), search (Tavily), extraction, verification, clustering, scoring, pipeline
 data/          demo_evidence.csv, research.db (created at runtime)
 evidence/      optional collected public JSON
 ```

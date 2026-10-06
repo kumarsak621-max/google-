@@ -15,7 +15,7 @@ export default function SettingsPage() {
       <p className="text-sm text-muted">
         API keys are kept in sessionStorage and sent only to the server analysis
         route. They are not embedded in frontend bundles. Prefer environment
-        variables on the host: OPENAI_API_KEY or GEMINI_API_KEY.
+        variables on the host: OPENROUTER_API_KEY or GEMINI_API_KEY.
       </p>
       <form
         className="space-y-3 rounded-lg border border-line bg-white p-4"
@@ -29,9 +29,9 @@ export default function SettingsPage() {
           <select
             className="mt-1 w-full rounded border border-line px-2 py-2"
             value={prov}
-            onChange={(e) => setProv(e.target.value as "openai" | "gemini")}
+            onChange={(e) => setProv(e.target.value as "openrouter" | "gemini")}
           >
-            <option value="openai">OpenAI</option>
+            <option value="openrouter">OpenRouter</option>
             <option value="gemini">Gemini</option>
           </select>
         </label>

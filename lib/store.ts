@@ -9,7 +9,7 @@ export interface StoreState {
   mode: DataMode;
   research: Episode[];
   apiKey: string;
-  provider: "heuristic" | "openai" | "gemini";
+  provider: "heuristic" | "openrouter" | "gemini";
 }
 
 export const defaultStore = (): StoreState => ({

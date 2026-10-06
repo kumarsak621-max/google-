@@ -119,7 +119,7 @@ def sidebar():
     quality = st.sidebar.slider("Evidence quality threshold", 1, 5, 4)
     keys = keys_status()
     st.sidebar.write("Tavily:", "configured" if keys["tavily"] else "missing")
-    st.sidebar.write("OpenAI:", "configured" if keys["openai"] else "optional / heuristic")
+    st.sidebar.write("OpenRouter:", "configured" if keys["openrouter"] else "optional / heuristic")
     return depth, sources, max_results, quality, keys
 
 
@@ -438,8 +438,15 @@ def page_research(depth, sources, max_results, quality, keys):
         st.warning(
             "TAVILY_API_KEY is not configured. Demo Mode still works.\n\n"
             "On Streamlit Community Cloud: App settings → Secrets:\n\n"
-            "```toml\nTAVILY_API_KEY = \"tvly-...\"\nOPENAI_API_KEY = \"sk-...\"\n```\n\n"
+            "```toml\nOPENROUTER_API_KEY = \"your-openrouter-api-key\"\n"
+            "TAVILY_API_KEY = \"your-tavily-api-key\"\n"
+            "OPENROUTER_MODEL = \"openai/gpt-4o-mini\"\n```\n\n"
             "Locally, set environment variables or `.streamlit/secrets.toml` (never commit secrets)."
+        )
+    if not keys["openrouter"]:
+        st.info(
+            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets. "
+            "Heuristic extraction still runs without it."
         )
     col1, col2 = st.columns(2)
     if col1.button("Load collected public corpus"):
@@ -462,7 +469,9 @@ def page_research(depth, sources, max_results, quality, keys):
             box.code("\n".join(logs[-20:]))
 
         try:
-            result = run_research(sources, depth, int(max_results), int(quality), progress, use_llm=keys["openai"])
+            result = run_research(
+                sources, depth, int(max_results), int(quality), progress, use_llm=keys["openrouter"]
+            )
             upsert_evidence(result["episodes"])
             save_run(result)
             st.session_state.real = load_real()

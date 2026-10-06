@@ -4,7 +4,8 @@ import json
 from collections import defaultdict
 from typing import Any
 
-from src.config import openai_key, openai_model
+from src.config import openrouter_key
+from src.llm import LLMError, generate_json
 
 
 def cluster_episodes(episodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -41,7 +42,7 @@ def cluster_episodes(episodes: list[dict[str, Any]]) -> list[dict[str, Any]]:
         }
         archetypes.append(arch)
 
-    if openai_key() and archetypes:
+    if openrouter_key() and archetypes:
         archetypes = _llm_names(archetypes, episodes) or archetypes
     return archetypes[:10]
 
@@ -88,8 +89,6 @@ def _top(items: list[dict[str, Any]], field: str) -> str:
 
 def _llm_names(archetypes: list[dict[str, Any]], episodes: list[dict[str, Any]]) -> list[dict[str, Any]] | None:
     try:
-        import requests
-
         summary = [
             {
                 "id": a["id"],
@@ -99,30 +98,25 @@ def _llm_names(archetypes: list[dict[str, Any]], episodes: list[dict[str, Any]])
             }
             for a in archetypes
         ]
-        res = requests.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {openai_key()}", "Content-Type": "application/json"},
-            json={
-                "model": openai_model(),
-                "response_format": {"type": "json_object"},
-                "messages": [
-                    {
-                        "role": "system",
-                        "content": "Name 5-10 retrieval archetypes from clusters. JSON: {items:[{id,name,description}]}. Do not invent extra evidence.",
-                    },
-                    {"role": "user", "content": json.dumps(summary)[:8000]},
-                ],
-            },
-            timeout=40,
+        data = generate_json(
+            [
+                {
+                    "role": "system",
+                    "content": "Name 5-10 retrieval archetypes from clusters. JSON: {items:[{id,name,description}]}. Do not invent extra evidence.",
+                },
+                {"role": "user", "content": json.dumps(summary)[:8000]},
+            ]
         )
-        if not res.ok:
+        items = data.get("items")
+        if not isinstance(items, list):
             return None
-        data = json.loads(res.json()["choices"][0]["message"]["content"])
-        by = {x["id"]: x for x in data.get("items") or []}
+        by = {x.get("id"): x for x in items if isinstance(x, dict) and x.get("id")}
         for a in archetypes:
             if a["id"] in by:
                 a["name"] = by[a["id"]].get("name") or a["name"]
                 a["description"] = by[a["id"]].get("description") or a["description"]
         return archetypes
+    except LLMError:
+        return None
     except Exception:
         return None

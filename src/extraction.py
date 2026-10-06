@@ -1,10 +1,10 @@
 from __future__ import annotations
 
-import json
 import re
 from typing import Any
 
-from src.config import openai_key, openai_model
+from src.config import openrouter_key
+from src.llm import LLMError, generate_json
 
 FAILURES = [
     "Memory-expression failure",
@@ -184,16 +184,13 @@ def _workaround(t: str) -> str:
 
 
 def llm_enrich(item: dict[str, Any]) -> dict[str, Any]:
-    key = openai_key()
-    if not key:
-        return item
+    if not openrouter_key():
+        raise LLMError(
+            "OpenRouter API key is missing. Add OPENROUTER_API_KEY to Streamlit Secrets."
+        )
     try:
-        import requests
-
-        payload = {
-            "model": openai_model(),
-            "response_format": {"type": "json_object"},
-            "messages": [
+        data = generate_json(
+            [
                 {
                     "role": "system",
                     "content": (
@@ -204,18 +201,8 @@ def llm_enrich(item: dict[str, Any]) -> dict[str, Any]:
                     ),
                 },
                 {"role": "user", "content": item.get("original_quote", "")[:2500]},
-            ],
-        }
-        res = requests.post(
-            "https://api.openai.com/v1/chat/completions",
-            headers={"Authorization": f"Bearer {key}", "Content-Type": "application/json"},
-            json=payload,
-            timeout=40,
+            ]
         )
-        if not res.ok:
-            return item
-        content = res.json()["choices"][0]["message"]["content"]
-        data = json.loads(content)
         item["retrieval_scenario"] = data.get("scenario") or item["retrieval_scenario"]
         item["remembered_information"] = data.get("remembers") or item["remembered_information"]
         item["forgotten_information"] = data.get("forgot") or item["forgotten_information"]
@@ -223,9 +210,18 @@ def llm_enrich(item: dict[str, Any]) -> dict[str, Any]:
         item["search_outcome"] = data.get("outcome") or item["search_outcome"]
         item["failure_category"] = data.get("failure") or item["failure_category"]
         item["workaround"] = data.get("workaround") or item["workaround"]
-        if isinstance(data.get("strength"), int) and 1 <= data["strength"] <= 5:
-            item["evidence_strength"] = data["strength"]
+        strength = data.get("strength")
+        try:
+            strength_n = int(strength)
+        except (TypeError, ValueError):
+            strength_n = None
+        if strength_n is not None and 1 <= strength_n <= 5:
+            item["evidence_strength"] = strength_n
         item["ai_interpretation"] = data.get("interpretation") or item["ai_interpretation"]
+    except LLMError as e:
+        if "missing" in str(e).lower() or "invalid" in str(e).lower():
+            raise
+        return item
     except Exception:
         return item
     return item

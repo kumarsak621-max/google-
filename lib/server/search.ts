@@ -15,12 +15,13 @@ export function searchConfig() {
   return {
     configured: Boolean(key),
     provider: provider(),
-    openai: Boolean(process.env.OPENAI_API_KEY),
+    openrouter: Boolean(process.env.OPENROUTER_API_KEY),
     gemini: Boolean(process.env.GEMINI_API_KEY),
     docs: {
       WEB_SEARCH_API_KEY: "Tavily API key by default. If WEB_SEARCH_PROVIDER=serper, this is the Serper API key.",
       WEB_SEARCH_PROVIDER: "tavily | serper",
-      OPENAI_API_KEY: "Optional. Used to extract structured episodes from page text.",
+      OPENROUTER_API_KEY: "Optional. Used to extract structured episodes from page text via OpenRouter.",
+      OPENROUTER_MODEL: "OpenRouter model id. Default openai/gpt-4o-mini.",
       GEMINI_API_KEY: "Optional alternative LLM.",
       DATABASE_URL: "Optional Postgres URL. If unset, evidence is stored in data/store.json (Replit-safe file DB).",
     },

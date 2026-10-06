@@ -20,7 +20,7 @@ type Job = {
 type Cfg = {
   configured: boolean;
   provider: string;
-  openai: boolean;
+  openrouter: boolean;
   gemini: boolean;
   docs: Record<string, string>;
   seededPublicEvidence: number;
@@ -87,7 +87,7 @@ export default function ResearchPage() {
         <div className="font-medium">Configuration</div>
         <ul className="mt-2 space-y-1 text-muted">
           <li>Web search ({cfg?.provider || "tavily"}): {cfg?.configured ? "configured" : "missing WEB_SEARCH_API_KEY"}</li>
-          <li>OpenAI: {cfg?.openai ? "configured" : "not set (heuristic extraction still runs)"}</li>
+          <li>OpenRouter: {cfg?.openrouter ? "configured" : "not set (heuristic extraction still runs)"}</li>
           <li>Collected public corpus: {cfg?.seededPublicEvidence ?? "—"} episodes ready without a search key</li>
         </ul>
         {!cfg?.configured && (
