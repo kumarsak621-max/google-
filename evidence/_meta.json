@@ -1,0 +1,22 @@
+{
+  "collection_meta": {
+    "collected_at": "2026-10-06",
+    "stopping_rule_reached": "3 — new searches produced mostly duplicate Ask Photos / classic-search / OCR / face-index threads. Did not reach 100 unique high-quality episodes. Did not treat 200+ reviewed snippets as 200 coded records.",
+    "verification_note": "Items marked index-verified appear in public Google Search snippets or Help Community thread previews with a live URL. Items marked page-fetched were loaded in full. Reddit HTML fetches returned 403. Nothing is fabricated. Do not treat index-verified quotes as courtroom-grade page dumps.",
+    "searches_run_approx": 55,
+    "pages_attempted_approx": 30,
+    "reddit_fetches_blocked": true,
+    "play_store_individual_reviews": "Not extractable as unique dated review URLs from Play Store listing pages in this environment.",
+    "app_store": "Two review snippets from Apple public review listing pages (E68, E69).",
+    "records_in_dataset": 72,
+    "strength_4_or_5": 60,
+    "unique_urls": 52,
+    "source_types": ["reddit", "google_help_community", "article", "quora", "app_store", "forum"],
+    "duplicate_groups": 29,
+    "files": {
+      "json": "evidence/retrieval-episodes.json",
+      "csv": "evidence/retrieval-episodes.csv",
+      "report": "evidence/EVIDENCE-COLLECTION-REPORT.md"
+    }
+  }
+}

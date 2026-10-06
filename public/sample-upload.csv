@@ -1,0 +1,4 @@
+source,url,date,title,author,text
+DemoForum,https://example.invalid/sample1,2026-01-02,Can't find Goa photos,alex,"I remember our Goa trip but not the month. Searching Goa used to show every photo in date order. Now I only get a few Best Matches and I cannot tell which beach day it was."
+DemoForum,https://example.invalid/sample2,2026-01-03,Prescription photo,sam,"I know I took a picture of the medicine box when I was sick last winter. Searching medicine, January, and the drug name doesn't find it."
+DemoReview,https://example.invalid/sample3,2026-01-04,Generic,pat,"Google Photos is terrible."

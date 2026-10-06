@@ -1,0 +1,97 @@
+id,source,source_type,url,date,original_quote,retrieval_scenario,remembered_information,forgotten_information,search_attempt,search_strategy,search_outcome,failure_category,workaround,evidence_strength,verification_status,ai_interpretation,synthetic
+D01,Demo · forum,demo,https://example.invalid/demo/d01,2026-03-12,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I know I took hundreds of photos in France last year. I don't remember the month. Searching 'France' used to show every photo from the trip in date order. Now I get a handful of Best Matches and cannot tell which beach day it was.",Find a specific photo from a remembered country trip without the date,Country (France); many trip photos; last year,"Exact month, city, which beach day",France,location search; keyword search,partial,Ranking failure,Switch to Classic Search,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D02,Demo · community,demo,https://example.invalid/demo/d02,2026-01-08,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I used to search 'kookaburra' and it found the bird. Now nothing. I asked for 'birds' and got 6 photos. I have over 400 bird photos. I need the kookaburra from the backyard, not a random Best Match.",Retrieve a specific animal photo using species then class,Species kookaburra; backyard; large bird library,Date taken,kookaburra; then birds,object search; query reformulation,failed,Ranking failure,Classic Search,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D03,Demo · review,demo,https://example.invalid/demo/d03,2025-11-02,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I searched 'dogs' because I cannot remember which month we got the puppy photos. I expected every dog photo newest first so I could scan. Instead I got a relevance list with no dates showing.",Scan pet photos when date is forgotten,Dogs / puppy photos exist,Month of puppy photos,dogs,object search,partial,Recognition failure,Ask for reverse chronological order,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D04,Demo · forum,demo,https://example.invalid/demo/d04,2024-09-18,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I photographed my Progressive insurance bill when we moved. I do not remember the date. Searching Progressive used to jump straight to that document. Now I get random photos that are not the bill.",Find a photographed bill by remembered brand text,Brand text Progressive; moving-house context,Capture date,Progressive,OCR/text search,failed,Representation gap,Unknown,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D05,Demo · community,demo,https://example.invalid/demo/d05,2024-04-25,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I screenshot a text message from my sister about the restaurant. I remember a phrase from the message but not when I took the screenshot. Search used to find screenshot text. Friends say quotes around the word help.",Retrieve a screenshot by remembered wording,Phrase in a screenshot; sister; restaurant,Date of screenshot; exact wording,phrase from the message,OCR/text search,partial,Query formulation failure,Quoted exact text,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D06,Demo · forum,demo,https://example.invalid/demo/d06,2026-06-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Need the screenshot of my boarding pass from about three years ago. I don't remember the airline date. I searched 'boarding pass'. It used to work instantly.",Travel document by type + relative time,Boarding pass screenshot; ~3 years ago,"Exact date, flight, airline",boarding pass,OCR/text search; object search,unknown,Representation gap,Unknown,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D07,Demo · workplace,demo,https://example.invalid/demo/d07,2025-10-14,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+A colleague asked for photos of a certain supplier's machinery. I used to type the name painted on the excavators and every matching photo came up. I do not remember which job sites. Now the name search returns nothing.",Work photos by painted brand text,Supplier name on machinery,Job site dates and locations,supplier name,OCR/text search,failed,Representation gap,Unknown,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D08,Demo · health,demo,https://example.invalid/demo/d08,2025-02-02,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I took a picture of the medicine I was taking last year when I was sick but I don't remember the date. Searching the medicine name isn't finding it.",Medicine photo from a sickness episode without a date,Medicine photo; last year; when I was sick,Exact date; maybe exact spelling,medicine name,OCR/text search; keyword search,failed,Representation gap,Unknown,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D09,Demo · family,demo,https://example.invalid/demo/d09,2021-08-16,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I scanned black and white photos of my great-grandmother. Most faces were not recognized. I wrote her name in the description so I can search it now.",Old family scans remembered by relationship,Great-grandmother; B&W scans,Original dates; faces not detected,her name after captions,person search,succeeded,Representation gap,Write names in descriptions,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D10,Demo · family,demo,https://example.invalid/demo/d10,2023-01-13,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I have a few photos where Google hasn't recognised a face. When I search their name the photo doesn't appear. There is no way to tag the missed face.",Search by remembered person; undetected face excluded,Person is in the photo,n/a — clue is social,their name,person search,failed,Representation gap,None in product,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D11,Demo · travel,demo,https://example.invalid/demo/d11,2023-07-06,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+My wife wants 'that picture we took when we went to that place'. I get it in seconds by zooming Google Maps on the area. When I can't find it, I usually didn't use the phone camera.",Spouse remembers trip/place not date; map zoom retrieves,Went to a place; a photo was taken,Date; often exact venue name,Google Maps photo map,location search,succeeded,Memory-expression failure,Map browsing,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D12,Demo · travel,demo,https://example.invalid/demo/d12,2026-05-22,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I have lots of photos out in the wilderness and it's easier to find them on my phone with the map than remembering the date. They would not have established names under Places.","Wilderness photos: spatial memory, unnamed land",Landscape / map location,Date; official place name,Places names vs phone map,location search,partial,Memory-expression failure,Phone heatmap,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D13,Demo · visual,demo,https://example.invalid/demo/d13,2022-09-20,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I have a recent photo that has something very distinct in it. I am trying to find an older photo of that same item but I have so many photos I can't find it and I don't remember when I took the photo.",Seed photo of an object; hunt older photo without date,Visual appearance of a distinct object; recent photo of it,When the older photo was taken,wanted search using a photo,Google Lens,failed,Memory-expression failure,Find more like this if available,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D14,Demo · visual,demo,https://example.invalid/demo/d14,2025-06-11,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Gemini can be useful if you're looking for a picture of myself with my arms crossed, when I can't remember anything else about the photo I'm looking for.",Pose-only visual memory succeeds,Self; arms crossed pose,"Date, place, event",picture of myself with my arms crossed,natural language,succeeded,Other,none,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D15,Demo · visual,demo,https://example.invalid/demo/d15,2025-04-17,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I searched for 'photos of me as a baby.' Ask said it didn't find any. Classic search for 'baby photos' instantly showed the baby pictures I was looking for.",Self + life stage without years,Self as a baby,Years of infancy,photos of me as a baby vs baby photos,natural language; keyword search,partial,Product understanding failure,Shorter classic keyword,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D16,Demo · album,demo,https://example.invalid/demo/d16,2026-02-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I'll open that Album, but I don't know how to easily find ONE particular picture among 1400+ pictures. Ctrl+F shows 0 results even for something I can see in the album.",Know which album; cannot locate one photo inside it,Which album; visual of the photo,Position in album,Open album; Ctrl+F,album browsing; keyword search,failed,Recognition failure,Favorites; rename,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D17,Demo · college,demo,https://example.invalid/demo/d17,2025-08-03,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I know we took a photo after finals in college. I remember who was there but not the year. Searching a friend's name misses the photo because his face isn't tagged.","College event remembered by people, not year",Friends present; after finals; college,Year,friend's name,person search,failed,Context fragmentation,Scroll timeline around remembered era,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D18,Demo · wedding,demo,https://example.invalid/demo/d18,2025-05-09,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I want the brunch photos from the morning after the wedding. Searching 'wedding' floods me with ceremony shots. I don't remember the calendar date of the brunch.",Sequence around an event without the date,Morning after the wedding; brunch,Calendar date,wedding,keyword search; trial-and-error,failed,Result noise,Open wedding then scroll later photos,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D19,Demo · restaurant,demo,https://example.invalid/demo/d19,2025-12-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+We ate somewhere in Goa with a blue plate special. I remember the plate and that it was during the trip, not the restaurant name. Searching 'Goa food' returns hundreds of meals.","Restaurant memory: trip + visual, not venue name",Goa trip; blue plate; food,Restaurant name; exact date,Goa food,location search; object search,failed,Result noise,Manual scroll of trip days,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D20,Demo · captions,demo,https://example.invalid/demo/d20,2025-07-21,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I added a caption to a picture, then tried to search for the caption. One word, all three words, quotation marks, even paste. Still no luck.",User encoded a memory as a caption then searched it,Caption they wrote,Date (why they captioned),"caption words, quotes, paste",keyword search; trial-and-error,failed,Representation gap,Unknown,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D21,Demo · success,demo,https://example.invalid/demo/d21,2024-05-02,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I wanted a picture of myself and my wife sitting in front of some tulips. I typed that description and found it in 2 minutes.",Person + scene description without exact date,Self; wife; tulips; sitting,Exact date (fuzzy),myself and my wife sitting in front of tulips,natural language; person search; object search,succeeded,Other,none,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D22,Demo · success,demo,https://example.invalid/demo/d22,2025-04-17,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+When I asked it to show pictures of my Corgi it pulled up the relevant photos and mentioned his name. It also showed homemade meals I've cooked over the years.",Named pet and cooking episodes without dates,Corgi; homemade meals over years,Specific dates,pictures of my Corgi; food I made,natural language,succeeded,Other,none,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D23,Demo · receipts,demo,https://example.invalid/demo/d23,2026-08-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Warranties live in a photo from 2024. Photos search can find 'receipt' sometimes. It never finds 'the thing I still need to do before Thursday.'","Warranty remembered as a pending task, not a receipt class",Photographed warranty in 2024; still need to act,Merchant; which receipt among many,receipt,OCR/text search,failed,Memory-expression failure,None reliable,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D24,Demo · locked,demo,https://example.invalid/demo/d24,2026-08-21,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Today I tried to look up my locked folder from inside Photos search and I wasn't able to find it. It contained private and critical documents.",Documents remembered as Locked Folder contents,Documents in Locked Folder,New UI location,Photos search for locked folder,keyword search,failed,Other,Collections → Locked,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D25,Demo · two people,demo,https://example.invalid/demo/d25,2019-04-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I searched for photos with both John Doe and Jane Doe. Many results showed only one person or an album titled with a birthday. Quoted names AND gave correct results.",Find photos with two remembered people together,Two people present,Query syntax,John Doe Jane Doe; quoted AND,person search; multiple keywords; query reformulation,succeeded,Query formulation failure,Quoted names AND,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D26,Demo · GPS off,demo,https://example.invalid/demo/d26,2021-03-11,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I took some photos last year whilst travelling and didn't have location tags turned on. I want to manually add location data so I can find them later.",Travel photos remembered as last year + trip; GPS off,Travelling last year,Embedded location,manual location add,location search,failed,Representation gap,Manually add locations,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D27,Demo · baby date,demo,https://example.invalid/demo/d27,2026-07-22,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I have saved photos from when my child was a baby. I've always been able to search by date, for example 'July 2016,' but now when I do that it says I can't search using those terms.",Baby photos using month-year because exact day unknown,Child as baby; July 2016,Exact day,July 2016,date search; keyword search,failed,Product understanding failure,Unknown,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D28,Demo · timeline,demo,https://example.invalid/demo/d28,2025-03-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Google photos app, scroll back to the year/month I'm looking for, look through the photos. Usually it's easier just scrolling to the date if I know roughly when that is.",Approximate year/month then timeline scroll,Rough year/season,Exact day,scroll to year/month,timeline browsing; date search,succeeded,Other,Manually scrolled timeline,3,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D29,Demo · recipes,demo,https://example.invalid/demo/d29,2024-11-19,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+If I have 100 recipes and I want 'beef ribs' it just brings up them all and I have to open each one. Finding family members is atrocious too. I can type Alan and it brings up pictures of Alex.",One recipe screenshot among many; person name mismatch,Dish name beef ribs; person name Alan,Which screenshot / date,beef ribs; Alan,OCR/text search; person search,failed,Result noise,Open each one,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D30,Demo · weak,demo,https://example.invalid/demo/d30,2026-01-01,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Google Photos search is terrible now. I hate it.",No specific retrieval episode,Unknown,Unknown,Unknown,Unknown,unknown,Other,Unknown,1,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D31,Demo · Halloween,demo,https://example.invalid/demo/d31,2025-10-31,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+Ask is better for things like couple's Halloween costume or cat in living room. Worse for a single noun like bird.",Complex scene vs class noun,Halloween costume; cat in living room,Exact date,couple's Halloween costume; cat in living room,natural language,succeeded,Other,Keep Ask for complex terms,4,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
+D32,Demo · postcode,demo,https://example.invalid/demo/d32,2017-04-21,"DEMO DATA — SYNTHETIC EXAMPLES — NOT REAL USER EVIDENCE
+
+I search Photos using the postcode of the property. It usually shows photos from that visit. I do about 10 visits a week so I never remember the date.",Work visits retrieved by postcode not date,Postcode of property visit,Exact date of each visit,postcode,location search,succeeded,Other,none,5,UNVERIFIED,SYNTHETIC DEMO DATA. This interpretation is for UI exploration only.,True
